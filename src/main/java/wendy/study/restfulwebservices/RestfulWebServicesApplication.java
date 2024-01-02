@@ -8,11 +8,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class RestfulWebServicesApplication {
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext ac = SpringApplication.run(RestfulWebServicesApplication.class, args);
 
-		String[] allBeanNames = ac.getBeanDefinitionNames();
-		for(String beanName : allBeanNames)
-			System.out.println(beanName);
+		SpringApplication.run(RestfulWebServicesApplication.class, args);
+
+//		ConfigurableApplicationContext ac = SpringApplication.run(RestfulWebServicesApplication.class, args);
+//
+//		String[] allBeanNames = ac.getBeanDefinitionNames();
+//		for(String beanName : allBeanNames)
+//			System.out.println(beanName);
 	}
 
 }
