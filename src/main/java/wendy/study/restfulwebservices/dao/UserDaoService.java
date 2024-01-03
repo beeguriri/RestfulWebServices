@@ -1,6 +1,5 @@
 package wendy.study.restfulwebservices.dao;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import wendy.study.restfulwebservices.bean.User;
 
