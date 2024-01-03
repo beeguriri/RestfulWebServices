@@ -1,5 +1,6 @@
 package wendy.study.restfulwebservices.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ public class UserController {
     //Status : 201 Created
     //Headers => location : http://localhost:8088/users/4
     @PostMapping("/users")
-    public ResponseEntity<User> addUser(@RequestBody User user) {
+    public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
 
         User savedUser = service.save(user);
 
