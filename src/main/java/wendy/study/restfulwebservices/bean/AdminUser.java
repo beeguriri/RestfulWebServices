@@ -1,17 +1,19 @@
 package wendy.study.restfulwebservices.bean;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonFilter;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
-@JsonIgnoreProperties(value = {"password", "ssn"})
-public class User {
+@NoArgsConstructor
+@JsonFilter("UserInfo")
+public class AdminUser {
 
     private Integer id;
 
@@ -21,7 +23,6 @@ public class User {
     @Past(message = "등록일은 미래 날짜를 입력 하실 수 없습니다.")
     private Date joinDate;
 
-//    @JsonIgnore //외부에 노출 하고 싶지 않은 데이터에 설정
     private String password;
     private String ssn;
 
