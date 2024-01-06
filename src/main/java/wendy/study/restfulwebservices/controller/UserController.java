@@ -1,7 +1,14 @@
 package wendy.study.restfulwebservices.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -13,8 +20,11 @@ import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "user-controller", description = "일반 사용자 서비스를 위한 컨트롤러") //클래스에 대한 설명을 달 때
 public class UserController {
 
     private final UserDaoService service;
@@ -24,8 +34,18 @@ public class UserController {
         return service.findAll();
     }
 
+    @Operation(summary = "사용자 정보 조회 API", description = "사용자 ID를 이용해서 사용자 상세 정보를 조회 합니다.")
+    @ApiResponses(
+            {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "400", description = "Bad Request"),
+                    @ApiResponse(responseCode = "404", description = "User Not Found"),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error"),
+            }
+    )
     @GetMapping("/users/{id}")
-    public User retrieveUser(@PathVariable int id){
+    public EntityModel<User> retrieveUser(
+            @Parameter(description = "사용자 ID", required = true, example = "1") @PathVariable int id){
 
         User user = service.findOne(id);
 
@@ -35,7 +55,14 @@ public class UserController {
             throw new UserNotFoundException(String.format("ID[%s] not found", id));
         }
 
-        return user;
+        EntityModel<User> entityModel = EntityModel.of(user);
+
+        //user객체에 link 기능 추가
+        //static method로 import
+        WebMvcLinkBuilder link = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+        entityModel.add(link.withRel("all-users")); //all-users -> http://localhost:8088/users
+
+        return entityModel;
     }
 
     //Status : 201 Created

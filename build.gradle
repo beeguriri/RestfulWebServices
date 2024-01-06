@@ -25,6 +25,18 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+	//swagger 사용을 위한 dependency 추가
+	//확인: http://localhost:8088/swagger-ui/index.html#/
+	implementation 'org.springframework.boot:spring-boot-starter-parent:3.1.2'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+	//스프링부트 액추에이터 사용
+	//확인: http://localhost:8088/actuator 의 end point 확인 후 입력
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	//hal browser 사용을 위한 dependency 추가
+	implementation 'org.springframework.data:spring-data-rest-hal-explorer'
+	//spring-security 사용을 위한 dependency 추가
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
