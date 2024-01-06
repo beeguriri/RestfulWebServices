@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wendy.study.restfulwebservices.bean.AdminUser;
+import wendy.study.restfulwebservices.bean.AdminUserV2;
 import wendy.study.restfulwebservices.bean.User;
 import wendy.study.restfulwebservices.dao.UserDaoService;
 import wendy.study.restfulwebservices.exception.UserNotFoundException;
@@ -47,7 +48,8 @@ public class AdminUserController {
         return mapping;
     }
 
-    @GetMapping("/users/{id}")
+    // uri로 버전관리
+    @GetMapping("/v1/users/{id}")
     public MappingJacksonValue retrieveUserForAdmin(@PathVariable int id){
 
         User user = service.findOne(id);
@@ -63,8 +65,36 @@ public class AdminUserController {
 
         //jsonfilter 적용
         //filter provider 형태로 변형하여 사용할 수 있음
+        //entity에서 설정해준 jsonfilter 이름과 동일하게 지정
         SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name", "joinDate", "ssn");
         SimpleFilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
+
+
+        MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
+        mapping.setFilters(filters);
+
+        return mapping;
+    }
+
+    @GetMapping("/v2/users/{id}")
+    public MappingJacksonValue retrieveUserForAdminV2(@PathVariable int id){
+
+        User user = service.findOne(id);
+
+        AdminUserV2 adminUser = new AdminUserV2();
+
+        if (user == null) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        } else {
+            //같은 이름의 property들이 복사 됨
+            BeanUtils.copyProperties(user, adminUser);
+            adminUser.setGrade("VIP"); //새로운 필드 추가
+        }
+
+        //jsonfilter 적용
+        //filter provider 형태로 변형하여 사용할 수 있음
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name", "joinDate", "grade");
+        SimpleFilterProvider filters = new SimpleFilterProvider().addFilter("UserInfoV2", filter);
 
 
         MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
