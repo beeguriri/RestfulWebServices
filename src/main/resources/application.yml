@@ -9,6 +9,11 @@ spring:
   messages:
     basename: messages
 
+#  security:
+#    user:
+#      name: wendy
+#      password: 1234
+
 management:
   endpoints:
     web:
