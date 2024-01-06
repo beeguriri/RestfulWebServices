@@ -2,6 +2,8 @@ package wendy.study.restfulwebservices.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -12,6 +14,8 @@ import wendy.study.restfulwebservices.exception.UserNotFoundException;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public User retrieveUser(@PathVariable int id){
+    public EntityModel<User> retrieveUser(@PathVariable int id){
 
         User user = service.findOne(id);
 
@@ -35,7 +39,14 @@ public class UserController {
             throw new UserNotFoundException(String.format("ID[%s] not found", id));
         }
 
-        return user;
+        EntityModel<User> entityModel = EntityModel.of(user);
+
+        //user객체에 link 기능 추가
+        //static method로 import
+        WebMvcLinkBuilder link = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+        entityModel.add(link.withRel("all-users")); //all-users -> http://localhost:8088/users
+
+        return entityModel;
     }
 
     //Status : 201 Created
