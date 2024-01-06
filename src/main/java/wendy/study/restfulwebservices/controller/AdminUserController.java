@@ -48,7 +48,9 @@ public class AdminUserController {
         return mapping;
     }
 
-    // uri로 버전관리
+    /**
+     * 방법1. URI로 버전관리 하기
+     */
     @GetMapping("/v1/users/{id}")
     public MappingJacksonValue retrieveUserForAdmin(@PathVariable int id){
 
@@ -78,6 +80,117 @@ public class AdminUserController {
 
     @GetMapping("/v2/users/{id}")
     public MappingJacksonValue retrieveUserForAdminV2(@PathVariable int id){
+
+        User user = service.findOne(id);
+
+        AdminUserV2 adminUser = new AdminUserV2();
+
+        if (user == null) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        } else {
+            //같은 이름의 property들이 복사 됨
+            BeanUtils.copyProperties(user, adminUser);
+            adminUser.setGrade("VIP"); //새로운 필드 추가
+        }
+
+        //jsonfilter 적용
+        //filter provider 형태로 변형하여 사용할 수 있음
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name", "joinDate", "grade");
+        SimpleFilterProvider filters = new SimpleFilterProvider().addFilter("UserInfoV2", filter);
+
+
+        MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
+        mapping.setFilters(filters);
+
+        return mapping;
+    }
+
+    /**
+     * 방법2. request parameter로 버전 관리 하기
+     * 호출할 떄 : http://localhost:8088/admin/users/1?version=1
+     */
+    @GetMapping(value = "/users/{id}", params = "version=1")
+    public MappingJacksonValue retrieveUserForAdminV3(@PathVariable int id){
+
+        User user = service.findOne(id);
+
+        AdminUser adminUser = new AdminUser();
+
+        if (user == null) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        } else {
+            //같은 이름의 property들이 복사 됨
+            BeanUtils.copyProperties(user, adminUser);
+        }
+
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name", "joinDate", "ssn");
+        SimpleFilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
+
+
+        MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
+        mapping.setFilters(filters);
+
+        return mapping;
+    }
+
+    @GetMapping(value = "/users/{id}", params = "version=2")
+    public MappingJacksonValue retrieveUserForAdminV4(@PathVariable int id){
+
+        User user = service.findOne(id);
+
+        AdminUserV2 adminUser = new AdminUserV2();
+
+        if (user == null) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        } else {
+            //같은 이름의 property들이 복사 됨
+            BeanUtils.copyProperties(user, adminUser);
+            adminUser.setGrade("VIP"); //새로운 필드 추가
+        }
+
+        //jsonfilter 적용
+        //filter provider 형태로 변형하여 사용할 수 있음
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name", "joinDate", "grade");
+        SimpleFilterProvider filters = new SimpleFilterProvider().addFilter("UserInfoV2", filter);
+
+
+        MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
+        mapping.setFilters(filters);
+
+        return mapping;
+    }
+
+    /**
+     * 방법3. header 값을 이용하여 호출하기
+     * 호출할 떄 :
+     * http://localhost:8088/admin/users/1 의 헤더값에 X-API-VERSION : 1 추가하기
+     */
+    @GetMapping(value = "/users/{id}", headers = "X-API-VERSION=1")
+    public MappingJacksonValue retrieveUserForAdminV5(@PathVariable int id){
+
+        User user = service.findOne(id);
+
+        AdminUser adminUser = new AdminUser();
+
+        if (user == null) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        } else {
+            //같은 이름의 property들이 복사 됨
+            BeanUtils.copyProperties(user, adminUser);
+        }
+
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name", "joinDate", "ssn");
+        SimpleFilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
+
+
+        MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
+        mapping.setFilters(filters);
+
+        return mapping;
+    }
+
+    @GetMapping(value = "/users/{id}", headers = "X-API-VERSION=2")
+    public MappingJacksonValue retrieveUserForAdminV6(@PathVariable int id){
 
         User user = service.findOne(id);
 
