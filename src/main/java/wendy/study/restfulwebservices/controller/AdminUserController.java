@@ -215,4 +215,62 @@ public class AdminUserController {
 
         return mapping;
     }
+
+    /**
+     * 방법4. mime-type (media type versioning)
+     * 호출할 떄 :
+     * http://localhost:8088/admin/users/1 의 헤더값에
+     * Accept : application/vnd.company.appv1+json
+     * 추가하기
+     */
+    @GetMapping(value = "/users/{id}", produces = "application/vnd.company.appv1+json")
+    public MappingJacksonValue retrieveUserForAdminV7(@PathVariable int id){
+
+        User user = service.findOne(id);
+
+        AdminUser adminUser = new AdminUser();
+
+        if (user == null) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        } else {
+            //같은 이름의 property들이 복사 됨
+            BeanUtils.copyProperties(user, adminUser);
+        }
+
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name", "joinDate", "ssn");
+        SimpleFilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
+
+
+        MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
+        mapping.setFilters(filters);
+
+        return mapping;
+    }
+
+    @GetMapping(value = "/users/{id}", produces = "application/vnd.company.appv2+json")
+    public MappingJacksonValue retrieveUserForAdminV8(@PathVariable int id){
+
+        User user = service.findOne(id);
+
+        AdminUserV2 adminUser = new AdminUserV2();
+
+        if (user == null) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        } else {
+            //같은 이름의 property들이 복사 됨
+            BeanUtils.copyProperties(user, adminUser);
+            adminUser.setGrade("VIP"); //새로운 필드 추가
+        }
+
+        //jsonfilter 적용
+        //filter provider 형태로 변형하여 사용할 수 있음
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name", "joinDate", "grade");
+        SimpleFilterProvider filters = new SimpleFilterProvider().addFilter("UserInfoV2", filter);
+
+
+        MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
+        mapping.setFilters(filters);
+
+        return mapping;
+    }
 }
