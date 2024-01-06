@@ -65,5 +65,35 @@ implementation 'org.springframework.data:spring-data-rest-hal-explorer'
 implementation 'org.springframework.boot:spring-boot-starter-security'
 ```
 
-## 그래서 Restful 한 서비스가 뭔데?!
+## RESTful API 설계 가이드
 ![](/images/restful.png)
+### ⭐Level 0
+- 리소스가 어떤 작업을 해야하는지 uri에 명시
+
+### ⭐Level 1
+- 사용자의 요청을 단순히 get, post로만 처리하고 있음
+- 모든 반환 코드를 200 ok 로 하고 있음
+
+### ⭐Level 2
+- level1 + HTTP Methods
+- 적절한 메소드에 맞게 설계
+  - 리소스의 상태가 변경할 수 없는 경우 get
+  - 새로운 리소스 추가 post
+  - 수정할 경우 put, fetch
+  - 삭제할 경우 delete 
+
+### ⭐Level 3
+- level2 + HATEOAS
+- 다음 작업으로 어떤 작업을 할 수 있는지 알려줌
+- 클라이언트에게 최소한의 엔드포인트 접속으로 다음 할 수 있는 작업을 알려줌
+
+## ⭐설계 가이드
+- 적절한 Request methods 사용
+- 적절한 Response Status 사용
+- 리소스를 명사 형태로 사용
+- 리소스의 단수/복수 구분해서 사용
+  - /users
+  - /user/1
+- 일관된 엔드포인트 사용
+  - PUT /gists/{id}/star
+  - DELETE /gists/{id}/star
