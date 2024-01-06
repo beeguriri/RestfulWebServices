@@ -33,6 +33,8 @@ dependencies {
 	//스프링부트 액추에이터 사용
 	//확인: http://localhost:8088/actuator 의 end point 확인 후 입력
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	//hal browser 사용을 위한 dependency 추가
+	implementation 'org.springframework.data:spring-data-rest-hal-explorer'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
