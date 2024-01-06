@@ -7,6 +7,7 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import wendy.study.restfulwebservices.bean.ResponseUserList;
 import wendy.study.restfulwebservices.bean.User;
 import wendy.study.restfulwebservices.exception.UserNotFoundException;
 import wendy.study.restfulwebservices.repository.UserRepository;
@@ -29,6 +30,23 @@ public class UserJPAController {
     @GetMapping("/users")
     public List<User> retrieveAllUsers() {
         return userRepository.findAll();
+    }
+
+    @GetMapping("/users-count")
+    public ResponseEntity<EntityModel<ResponseUserList>> retrieveAllUsersWithCount() {
+
+        List<User> users = userRepository.findAll();
+        ResponseUserList response = ResponseUserList.builder()
+                .count(users.isEmpty() ? 0 : users.size())
+                .users(users)
+                .build();
+
+        EntityModel<ResponseUserList> entityModel = EntityModel.of(response);
+        //user객체에 link 기능 추가
+        WebMvcLinkBuilder link = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+        entityModel.add(link.withSelfRel());
+
+        return ResponseEntity.ok(entityModel);
     }
 
     @GetMapping("/users/{id}")
